@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>OSB - متجر التطبيقات والألعاب</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--gold:#D4AF37;--gold-light:#F4D03F;--gold-dark:#B8860B;--bg:#070707;--bg-elevated:#0f0f0f;--surface:#161616;--surface-hover:#1e1e1e;--text:#f0f0f0;--text-secondary:#a0a0a0;--text-muted:#666666;--border:rgba(212,175,55,0.08);--border-hover:rgba(212,175,55,0.25);--input-bg:rgba(255,255,255,0.03);--success:#00c853;--danger:#ff1744;--info:#00b0ff;--warning:#ff9100;--radius-lg:16px;--radius-xl:24px;}
+[data-theme="light"]{--bg:#f8f6f1;--bg-elevated:#ffffff;--surface:#ffffff;--surface-hover:#f5f3ee;--text:#1a1a1a;--text-secondary:#555555;--text-muted:#888888;--border:rgba(184,134,11,0.12);--border-hover:rgba(184,134,11,0.3);--input-bg:rgba(0,0,0,0.02);}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{font-family:'Tajawal','Cairo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background 0.5s,color 0.5s;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--gold-dark);border-radius:2px}
+
+/* SPLASH */
+.splash{position:fixed;inset:0;background:radial-gradient(ellipse at center, #1a0f00 0%, #070707 50%, #000 100%);z-index:10000;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:opacity 0.8s ease, visibility 0.8s ease;}
+.splash.done{opacity:0;visibility:hidden;pointer-events:none}
+.splash-ring{width:180px;height:180px;border:2px solid rgba(212,175,55,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:32px;}
+.splash-ring::before{content:'';position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(212,175,55,0.05);animation:ringPulse 2s ease-in-out infinite;}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:0.5}}
+.splash-icon{font-size:64px;color:var(--gold);filter:drop-shadow(0 0 20px rgba(212,175,55,0.3));animation:iconFloat 3s ease-in-out infinite;}
+@keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.splash-title{font-size:42px;font-weight:900;letter-spacing:12px;color:var(--gold);margin-bottom:8px;opacity:0;animation:fadeUp 0.6s ease 0.3s forwards;}
+.splash-sub{color:var(--text-muted);font-size:13px;letter-spacing:3px;margin-bottom:32px;opacity:0;animation:fadeUp 0.5s ease 0.6s forwards;}
+.splash-bar{width:160px;height:2px;background:rgba(212,175,55,0.1);border-radius:2px;overflow:hidden;opacity:0;animation:fadeUp 0.4s ease 0.8s forwards;}
+.splash-bar-fill{width:0%;height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold),var(--gold-light));animation:fillBar 2.5s ease 0.8s forwards;}
+@keyframes fillBar{to{width:100%}}@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.splash-dev{position:absolute;bottom:32px;font-size:11px;color:var(--text-muted);letter-spacing:2px;opacity:0;animation:fadeUp 0.5s ease 1.2s forwards;}
+.splash-dev span{color:var(--gold);font-weight:700}
+
+/* WELCOME SCREEN */
+.welcome-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;transition:opacity 0.6s ease, visibility 0.6s ease;}
+.welcome-screen.done{opacity:0;visibility:hidden;pointer-events:none}
+.welcome-brand{text-align:center;margin-bottom:48px;}
+.welcome-brand .logo-icon{width:80px;height:80px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#000;margin:0 auto 20px;box-shadow:0 8px 32px rgba(212,175,55,0.25);}
+.welcome-brand h1{font-size:32px;font-weight:900;color:var(--gold);letter-spacing:4px;margin-bottom:6px;}
+.welcome-brand p{color:var(--text-secondary);font-size:14px;}
+.welcome-options{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;}
+.welcome-btn{width:100%;padding:16px 24px;border-radius:var(--radius-lg);border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center;gap:10px;}
+.welcome-btn:hover{border-color:var(--border-hover);background:var(--surface-hover);transform:translateY(-2px);}
+.welcome-btn.primary{background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;color:#000;box-shadow:0 4px 20px rgba(212,175,55,0.25);}
+.welcome-btn.primary:hover{box-shadow:0 8px 30px rgba(212,175,55,0.35);transform:translateY(-2px);}
+.welcome-btn.admin{border-color:rgba(255,23,68,0.3);color:var(--danger);font-size:13px;padding:12px;margin-top:8px;}
+.welcome-btn.admin:hover{border-color:var(--danger);background:rgba(255,23,68,0.05);}
+.welcome-divider{display:flex;align-items:center;gap:12px;margin:8px 0;color:var(--text-muted);font-size:12px;}
+.welcome-divider::before,.welcome-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.welcome-footer{position:absolute;bottom:24px;text-align:center;color:var(--text-muted);font-size:11px;letter-spacing:1px;}
+
+/* FLOATING BUTTONS */
+.theme-btn{position:fixed;bottom:24px;left:24px;z-index:998;width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--gold);box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:all 0.3s ease;}
+.theme-btn:hover{transform:scale(1.1);border-color:var(--gold)}
+.ai-btn{position:fixed;bottom:24px;right:24px;z-index:997;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:#000;box-shadow:0 4px 20px rgba(212,175,55,0.3);transition:all 0.3s ease;}
+.ai-btn:hover{transform:scale(1.1)}
+
+/* AI CHAT */
+.ai-chat{position:fixed;bottom:88px;right:24px;width:380px;max-width:calc(100vw - 48px);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);box-shadow:0 20px 60px rgba(0,0,0,0.5);z-index:996;transform:translateY(20px) scale(0.95);opacity:0;visibility:hidden;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);overflow:hidden;display:flex;flex-direction:column;max-height:500px;}
+.ai-chat.active{transform:translateY(0) scale(1);opacity:1;visibility:visible}
+.ai-header{padding:16px 18px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:#000;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.ai-header i{font-size:18px}.ai-header h4{font-size:13px;font-weight:800}.ai-header span{font-size:10px;opacity:0.7;margin-right:auto}
+.ai-header button{background:none;border:none;color:#000;cursor:pointer;font-size:14px;margin-right:auto;transition:transform 0.3s;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:8px;}
+.ai-header button:hover{background:rgba(0,0,0,0.1);transform:rotate(90deg)}
+.ai-body{padding:16px;flex:1;overflow-y:auto;max-height:320px;}
+.ai-msg{background:var(--input-bg);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;font-size:13px;line-height:1.7;color:var(--text);animation:msgIn 0.3s ease;}
+.ai-msg.user{background:rgba(212,175,55,0.08);border-color:rgba(212,175,55,0.2);margin-left:12px;margin-right:0;}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.ai-input{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
+.ai-input input{flex:1;padding:10px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:all 0.3s;}
+.ai-input input:focus{border-color:var(--gold)}
+.ai-input button{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;color:#000;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;}
+.ai-input button:hover{transform:scale(1.1)}
+
+/* AUTH MODALS */
+.auth-o{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(20px);display:flex;justify-content:center;align-items:center;z-index:1000;opacity:0;visibility:hidden;transition:all 0.4s ease;padding:16px;}
+.auth-o.active{opacity:1;visibility:visible}
+.auth-c{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);width:100%;max-width:420px;padding:28px;position:relative;box-shadow:0 30px 60px rgba(0,0,0,0.5);transform:scale(0.92) translateY(30px);transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);max-height:90vh;overflow-y:auto;}
+.auth-o.active .auth-c{transform:scale(1) translateY(0)}
+.auth-x{position:absolute;top:16px;left:16px;width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;font-size:12px;}
+.auth-x:hover{background:rgba(212,175,55,0.1);transform:rotate(90deg)}
+.auth-logo{text-align:center;margin-bottom:24px}.auth-logo h1{font-size:32px;font-weight:900;color:var(--gold);letter-spacing:4px;}.auth-logo p{color:var(--text-muted);font-size:12px;margin-top:4px}
+.auth-tabs{display:flex;gap:6px;margin-bottom:20px;background:var(--input-bg);border-radius:12px;padding:4px;}
+.auth-tab{flex:1;padding:10px;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border-radius:10px;transition:all 0.3s;}
+.auth-tab.active{background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(212,175,55,0.1));color:var(--gold);box-shadow:0 2px 10px rgba(212,175,55,0.1);}
+.auth-f{display:none}.auth-f.active{display:block;animation:fadeIn 0.5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.fg{margin-bottom:14px}.fg label{display:block;margin-bottom:5px;color:var(--text-secondary);font-size:11px;font-weight:600;}
+.fg input,.fg select,.fg textarea{width:100%;padding:12px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:all 0.3s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold);background:rgba(212,175,55,0.03);}
+.fg textarea{resize:vertical;min-height:80px}.fg .error-msg{color:var(--danger);font-size:11px;margin-top:5px;display:none}
+.fg.error input,.fg.error select,.fg.error textarea{border-color:var(--danger)}.fg.error .error-msg{display:block}
+.auth-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:12px;color:#000;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;transition:all 0.3s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.auth-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(212,175,55,0.25)}.auth-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.auth-sw{text-align:center;margin-top:14px;color:var(--text-muted);font-size:13px;}.auth-sw a{color:var(--gold);text-decoration:none;font-weight:700;cursor:pointer}
+.admin-link{text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}.admin-link p{color:var(--text-muted);font-size:11px;margin-bottom:8px}
+.admin-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:transparent;border:1.5px solid rgba(255,23,68,0.3);border-radius:10px;color:var(--danger);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.3s;text-decoration:none;}
+.admin-btn:hover{background:rgba(255,23,68,0.08);border-color:var(--danger)}
+.admin-badge{display:inline-block;background:linear-gradient(135deg,var(--danger),#ff4569);color:white;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;margin-right:6px;vertical-align:middle;}
+
+/* HEADER */
+.header{background:rgba(7,7,7,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:10px 0;position:sticky;top:0;z-index:100;}
+[data-theme="light"] .header{background:rgba(248,246,241,0.95)}
+.h-inner{max-width:1400px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;cursor:pointer;text-decoration:none;}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#000;font-weight:900;box-shadow:0 4px 15px rgba(212,175,55,0.2);}
+.logo-text{font-size:22px;font-weight:900;color:var(--gold);letter-spacing:2px;}
+.search{position:relative;width:100%;max-width:280px;flex-shrink:1;}
+.search input{width:100%;padding:10px 38px 10px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:all 0.3s;}
+.search input:focus{border-color:var(--gold);box-shadow:0 0 15px rgba(212,175,55,0.08)}.search input::placeholder{color:var(--text-muted)}
+.search i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:13px;}
+.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:11px;display:none;width:20px;height:20px;align-items:center;justify-content:center;}
+.search input:not(:placeholder-shown)+i+.search-clear{display:flex}
+.nav{display:flex;gap:4px;align-items:center;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}.nav::-webkit-scrollbar{display:none}
+.nav-link{padding:8px 12px;color:var(--text-muted);text-decoration:none;font-weight:600;border-radius:8px;transition:all 0.3s;cursor:pointer;border:none;background:transparent;font-family:inherit;font-size:12px;white-space:nowrap;flex-shrink:0;}
+.nav-link:hover,.nav-link.active{color:var(--gold);background:rgba(212,175,55,0.06)}
+.user{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dark),var(--gold));display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;cursor:pointer;border:2px solid rgba(212,175,55,0.2);transition:all 0.3s;font-size:13px;}
+.avatar:hover{transform:scale(1.1)}
+.btn-p{padding:10px 20px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:10px;color:#000;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.3s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(212,175,55,0.25)}
+
+/* HERO */
+.hero{padding:50px 20px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(212,175,55,0.08);border:1px solid var(--border);padding:6px 14px;border-radius:50px;font-size:12px;color:var(--gold);margin-bottom:20px;cursor:pointer;transition:all 0.3s;}
+.hero-badge:hover{background:rgba(212,175,55,0.15)}
+.hero h1{font-size:42px;font-weight:900;line-height:1.2;margin-bottom:14px;color:var(--text);}.hero h1 span{color:var(--gold)}
+.hero p{font-size:15px;color:var(--text-secondary);max-width:480px;margin:0 auto 28px;line-height:1.7;}
+.hero-stats{display:flex;justify-content:center;gap:32px;margin-top:36px;flex-wrap:wrap;}
+.stat-item{text-align:center;transition:all 0.3s}.stat-item:hover{transform:translateY(-4px)}
+.stat-value{font-size:28px;font-weight:900;color:var(--gold)}.stat-label{font-size:11px;color:var(--text-muted);margin-top:4px}
+
+/* CATEGORIES */
+.categories{padding:24px 20px;max-width:1400px;margin:0 auto;}
+.sec-title{font-size:22px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:8px;color:var(--text);}.sec-title i{color:var(--gold);font-size:18px}
+.sec-sub{color:var(--text-muted);margin-bottom:20px;font-size:13px}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:36px;}
+.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 16px;text-align:center;cursor:pointer;transition:all 0.35s ease;position:relative;overflow:hidden;}
+.cat-card:hover{transform:translateY(-4px);border-color:var(--border-hover);box-shadow:0 16px 40px rgba(0,0,0,0.25);}
+.cat-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--gold-dark),var(--gold));transform:scaleX(0);transition:transform 0.3s ease;}
+.cat-card:hover::before{transform:scaleX(1)}
+.cat-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 10px;background:rgba(212,175,55,0.08);color:var(--gold);border:1px solid var(--border);transition:all 0.3s;}
+.cat-card:hover .cat-icon{transform:scale(1.08) rotate(3deg)}
+.cat-card h3{font-size:14px;font-weight:800;margin-bottom:3px;color:var(--text)}.cat-card p{font-size:11px;color:var(--text-muted)}
+
+/* APPS SECTION */
+.apps-sec{padding:24px 20px;max-width:1400px;margin:0 auto;display:none;}
+.apps-sec.active{display:block;animation:fadeIn 0.4s ease}
+.filter-bar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.filter-btn{padding:7px 14px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.3s;}
+.filter-btn:hover,.filter-btn.active{background:rgba(212,175,55,0.12);color:var(--gold);border-color:rgba(212,175,55,0.3);}
+.sort-select{padding:7px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:11px;outline:none;cursor:pointer;margin-right:auto;}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+.app-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;transition:all 0.35s ease;cursor:pointer;}
+.app-card:hover{transform:translateY(-5px);border-color:var(--border-hover);box-shadow:0 20px 50px rgba(0,0,0,0.3);}
+.app-img{width:100%;height:140px;background:linear-gradient(135deg,var(--bg-elevated),#1c1c1c);display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;overflow:hidden;}
+.app-img::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:50%;background:linear-gradient(to top,var(--surface),transparent);}
+.app-badge{position:absolute;top:10px;right:10px;padding:3px 8px;border-radius:20px;font-size:9px;font-weight:800;z-index:2;}
+.badge-new{background:var(--success);color:#000}.badge-hot{background:linear-gradient(135deg,#ff416c,#ff4b2b);color:white}.badge-premium{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000}
+.app-info{padding:16px}.app-tags{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;}
+.tag{padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;background:rgba(212,175,55,0.08);color:var(--gold);border:1px solid var(--border);}
+.app-info h3{font-size:15px;font-weight:800;margin-bottom:5px;color:var(--text)}
+.app-info p{color:var(--text-muted);font-size:12px;line-height:1.6;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.app-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.rating{display:flex;align-items:center;gap:4px;color:var(--gold);font-size:12px;font-weight:700;}
+.size{color:var(--text-muted);font-size:10px}
+.app-actions{display:flex;gap:6px}
+.btn-d{flex:1;padding:9px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:10px;color:#000;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.btn-d:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(212,175,55,0.2)}.btn-d.down{background:linear-gradient(135deg,var(--info),#0091ea);pointer-events:none}.btn-d.comp{background:linear-gradient(135deg,var(--success),#00a344);pointer-events:none}
+.btn-fav{width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:rgba(212,175,55,0.04);color:var(--gold);cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.btn-fav:hover{background:rgba(212,175,55,0.12);transform:scale(1.1)}.btn-fav.active{color:var(--danger);border-color:rgba(255,23,68,0.3);background:rgba(255,23,68,0.06);}
+
+/* APP DETAIL */
+.detail-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);display:flex;justify-content:center;align-items:center;z-index:2000;opacity:0;visibility:hidden;transition:all 0.3s ease;overflow-y:auto;padding:16px;}
+.detail-modal.active{opacity:1;visibility:visible}
+.detail-c{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);width:100%;max-width:640px;max-height:90vh;overflow-y:auto;position:relative;transform:scale(0.94);transition:transform 0.3s ease;}
+.detail-modal.active .detail-c{transform:scale(1)}
+.detail-header{position:relative;height:180px;background:linear-gradient(135deg,var(--bg-elevated),#1c1c1c);display:flex;align-items:center;justify-content:center;font-size:72px;border-radius:var(--radius-xl) var(--radius-xl) 0 0;overflow:hidden;}
+.detail-header::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:60%;background:linear-gradient(to top,var(--surface),transparent);}
+.detail-close{position:absolute;top:14px;left:14px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,0.5);border:1px solid var(--border);color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;z-index:10;font-size:12px;}
+.detail-close:hover{background:var(--danger);color:white;border-color:var(--danger);transform:rotate(90deg)}
+.detail-body{padding:24px}.detail-body h2{font-size:24px;font-weight:900;margin-bottom:8px;color:var(--text)}
+.detail-meta{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+.detail-meta span{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text-muted);}.detail-meta span i{color:var(--gold);font-size:11px}
+.detail-desc{color:var(--text-secondary);line-height:1.8;margin-bottom:20px;font-size:13px;}
+.detail-screenshots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+.detail-screenshot{aspect-ratio:16/9;background:var(--bg-elevated);border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:20px;transition:all 0.3s;cursor:pointer;}
+.detail-screenshot:hover{border-color:var(--gold);transform:translateY(-2px)}
+.detail-actions{display:flex;gap:10px;flex-wrap:wrap}.detail-actions .btn-p{flex:1;min-width:140px;padding:12px;font-size:14px;}
+
+/* DOWNLOADS */
+.down-sec{padding:24px 20px;max-width:1400px;margin:0 auto;display:none;}
+.down-sec.active{display:block;animation:fadeIn 0.4s ease}
+.down-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+.down-header h2{font-size:22px;display:flex;align-items:center;gap:8px;color:var(--text)}.down-header h2 i{color:var(--gold)}
+.down-list{display:flex;flex-direction:column;gap:12px}
+.down-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;display:flex;align-items:center;gap:14px;transition:all 0.3s;flex-wrap:wrap;}
+.down-item:hover{border-color:var(--border-hover);transform:translateX(-3px)}
+.down-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));display:flex;align-items:center;justify-content:center;font-size:20px;color:#000;flex-shrink:0;}
+.down-info{flex:1;min-width:140px}.down-info h4{font-size:14px;font-weight:800;margin-bottom:2px;color:var(--text)}.down-info p{font-size:10px;color:var(--text-muted)}
+.down-bar{width:160px;margin:0 12px;flex-shrink:0}.down-bar-bg{width:100%;height:4px;background:var(--input-bg);border-radius:10px;overflow:hidden;margin-bottom:4px;}
+.down-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold));border-radius:10px;transition:width 0.3s}
+.down-status{font-size:10px;color:var(--text-muted);text-align:center}.down-status.comp{color:var(--success)}.down-status.pause{color:var(--info)}
+.down-actions{display:flex;gap:5px;flex-shrink:0}.down-actions button{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.down-actions button:hover{background:rgba(212,175,55,0.1);border-color:var(--gold);color:var(--gold)}
+
+/* DOWNLOAD PROGRESS */
+.down-prog{position:fixed;bottom:84px;left:24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;width:320px;max-width:calc(100vw - 48px);box-shadow:0 20px 60px rgba(0,0,0,0.5);z-index:500;transform:translateY(150%);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+.down-prog.active{transform:translateY(0)}
+.dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.dh h4{font-size:13px;display:flex;align-items:center;gap:6px;color:var(--text)}.dh h4 i{color:var(--gold)}
+.dh button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;transition:all 0.3s;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;}
+.dh button:hover{color:var(--danger);background:rgba(255,23,68,0.08)}
+.pbar{width:100%;height:4px;background:var(--input-bg);border-radius:10px;overflow:hidden;margin-bottom:6px;}
+.pfill{height:100%;background:linear-gradient(90deg,var(--gold-dark),var(--gold),var(--gold-light));border-radius:10px;width:0%;transition:width 0.3s;position:relative;}
+.pfill::after{content:'';position:absolute;top:0;right:0;width:20px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25));animation:shimmer 1s infinite;}
+@keyframes shimmer{0%{transform:translateX(0)}100%{transform:translateX(20px)}}
+.pinfo{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted)}
+.pacts{display:flex;gap:6px;margin-top:10px}.pacts button{flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font-family:inherit;font-size:10px;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:4px;font-weight:600;}
+.pacts button:hover{background:rgba(212,175,55,0.1)}
+
+/* ADMIN */
+.admin{display:none;padding:24px 20px;max-width:1400px;margin:0 auto;}
+.admin.active{display:block;animation:fadeIn 0.4s ease}
+.ad-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.ad-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
+.ad-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;display:flex;align-items:center;gap:14px;transition:all 0.3s;}
+.ad-card:hover{border-color:var(--border-hover);transform:translateY(-2px)}
+.ad-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.ad-icon.b{background:rgba(0,176,255,0.08);color:var(--info)}.ad-icon.g{background:rgba(0,200,83,0.08);color:var(--success)}.ad-icon.go{background:rgba(212,175,55,0.08);color:var(--gold)}.ad-icon.r{background:rgba(255,23,68,0.08);color:var(--danger)}
+.ad-info h3{font-size:22px;font-weight:900;margin-bottom:2px;color:var(--text)}.ad-info p{color:var(--text-muted);font-size:11px}
+.ad-table{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:24px;}
+.ad-th{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.ad-th h3{font-size:16px;display:flex;align-items:center;gap:8px;color:var(--text)}.ad-th h3 i{color:var(--gold)}
+.ad-search{padding:7px 12px;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:12px;outline:none;width:180px;transition:all 0.3s;}
+.ad-search:focus{border-color:var(--gold)}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 16px;text-align:right;color:var(--text-muted);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1px;background:var(--input-bg);white-space:nowrap;}
+td{padding:12px 16px;border-bottom:1px solid rgba(128,128,128,0.06);color:var(--text);font-size:12px;}
+tr:hover td{background:rgba(212,175,55,0.02)}
+.app-sm{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));display:flex;align-items:center;justify-content:center;font-size:16px;color:#000;flex-shrink:0;}
+.app-row{display:flex;align-items:center;gap:10px}.app-row div h4{font-size:13px;font-weight:700;color:var(--text)}.app-row div p{font-size:10px;color:var(--text-muted)}
+.btn-i{width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;transition:all 0.3s;display:inline-flex;align-items:center;justify-content:center;margin:0 2px;font-size:11px;}
+.btn-ed{background:rgba(0,176,255,0.08);color:var(--info)}.btn-ed:hover{background:var(--info);color:white}
+.btn-del{background:rgba(255,23,68,0.08);color:var(--danger)}.btn-del:hover{background:var(--danger);color:white}
+.btn-add{padding:9px 18px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:10px;color:#000;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:5px;}
+.btn-add:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(212,175,55,0.2)}
+
+/* PAGINATION */
+.pagination{display:flex;justify-content:center;gap:6px;margin-top:24px;flex-wrap:wrap;}
+.page-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text-muted);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;}
+.page-btn:hover,.page-btn.active{background:rgba(212,175,55,0.12);color:var(--gold);border-color:rgba(212,175,55,0.3);}
+.page-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* MODALS */
+.modal-o{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:2000;opacity:0;visibility:hidden;transition:all 0.3s ease;overflow-y:auto;padding:16px;}
+.modal-o.active{opacity:1;visibility:visible}
+.modal-c{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:24px;transform:scale(0.94);transition:transform 0.3s ease;}
+.modal-o.active .modal-c{transform:scale(1)}
+.modal-c h2{font-size:18px;margin-bottom:18px;display:flex;align-items:center;gap:8px;color:var(--text)}.modal-c h2 i{color:var(--gold)}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.macts{display:flex;gap:8px;margin-top:18px}.macts button{flex:1;padding:12px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.3s;}
+.btn-c{background:var(--input-bg);border:1px solid var(--border);color:var(--text)}.btn-c:hover{background:rgba(128,128,128,0.08)}
+.btn-s{background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;color:#000}.btn-s:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(212,175,55,0.2)}
+
+/* TOAST */
+.toast-c{position:fixed;top:80px;left:20px;z-index:3000;display:flex;flex-direction:column;gap:6px;}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 40px rgba(0,0,0,0.4);transform:translateX(-150%);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);min-width:240px;max-width:320px;}
+.toast.show{transform:translateX(0)}
+.toast-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.toast.s .toast-ic{background:rgba(0,200,83,0.08);color:var(--success)}.toast.e .toast-ic{background:rgba(255,23,68,0.08);color:var(--danger)}.toast.i .toast-ic{background:rgba(0,176,255,0.08);color:var(--info)}.toast.w .toast-ic{background:rgba(255,145,0,0.08);color:var(--warning)}
+.toast-t h4{font-size:12px;margin-bottom:2px;color:var(--text);font-weight:800}.toast-t p{font-size:10px;color:var(--text-muted)}
+
+/* FOOTER */
+.footer{background:linear-gradient(to top,rgba(0,0,0,0.15),transparent);padding:40px 20px 16px;margin-top:48px;border-top:1px solid var(--border);}
+[data-theme="light"] .footer{background:linear-gradient(to top,rgba(0,0,0,0.02),transparent)}
+.f-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;}
+.f-brand h2{font-size:24px;color:var(--gold);margin-bottom:8px;font-weight:900;}.f-brand p{color:var(--text-muted);line-height:1.7;font-size:11px}
+.f-links h4{font-size:13px;margin-bottom:14px;color:var(--gold);font-weight:800;}
+.f-links a{display:block;color:var(--text-muted);text-decoration:none;padding:5px 0;transition:all 0.3s;font-size:11px;}
+.f-links a:hover{color:var(--gold);padding-right:6px}
+.f-bottom{max-width:1400px;margin:24px auto 0;padding-top:16px;border-top:1px solid rgba(128,128,128,0.06);display:flex;justify-content:space-between;align-items:center;color:var(--text-muted);font-size:10px;flex-wrap:wrap;gap:8px;}
+.social{display:flex;gap:8px;margin-top:14px}.social a{width:32px;height:32px;border-radius:8px;background:rgba(212,175,55,0.06);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--gold);text-decoration:none;transition:all 0.3s;font-size:13px;}
+.social a:hover{background:var(--gold);color:#000;transform:translateY(-2px)}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:48px 16px;color:var(--text-muted);grid-column:1/-1;}
+.empty-state i{font-size:56px;margin-bottom:16px;display:block;color:var(--border)}.empty-state h3{font-size:18px;margin-bottom:8px;color:var(--text);font-weight:800}.empty-state p{font-size:13px}
+
+/* RESPONSIVE */
+@media(max-width:1024px){.h-inner{flex-wrap:wrap;gap:10px}.search{order:3;width:100%;max-width:none}.nav{order:2;width:auto;flex:1;justify-content:center}.user{order:1}}
+@media(max-width:768px){.hero h1{font-size:28px}.hero-stats{flex-direction:column;gap:14px}.f-inner{grid-template-columns:1fr;gap:16px}.f-row{grid-template-columns:1fr}.nav{display:none}.apps-grid{grid-template-columns:1fr}.down-prog{width:calc(100% - 32px);left:16px}.ad-stats{grid-template-columns:1fr}.search{width:100%;max-width:none}.theme-btn{bottom:16px;left:16px;width:40px;height:40px;font-size:14px}.ai-btn{bottom:16px;right:16px;width:46px;height:46px;font-size:18px}.ai-chat{width:calc(100vw - 32px);right:16px;max-height:65vh}.splash-title{font-size:32px;letter-spacing:8px}.h-inner{padding:0 12px}.down-item{flex-direction:column;align-items:flex-start}.down-bar{width:100%;margin:8px 0}.detail-screenshots{grid-template-columns:repeat(2,1fr)}.welcome-brand h1{font-size:26px}.welcome-options{max-width:100%}}
+@media(max-width:480px){.hero{padding:32px 16px}.hero h1{font-size:24px}.categories{padding:16px}.apps-sec{padding:16px}.down-sec{padding:16px}.admin{padding:16px}.auth-c{padding:20px 16px}.modal-c{padding:16px}.detail-c{max-width:100%}.detail-actions .btn-p{min-width:100%}}
+</style>
+</head>
+<body>
+<!-- SPLASH SCREEN -->
+<div class="splash" id="splash">
+    <div class="splash-ring">
+        <div class="splash-icon">
+            <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="35" r="18" stroke="#D4AF37" stroke-width="3" fill="none"/>
+                <circle cx="43" cy="32" r="3" fill="#D4AF37"/>
+                <circle cx="57" cy="32" r="3" fill="#D4AF37"/>
+                <path d="M32 50 Q20 65 15 85" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <path d="M42 52 Q35 70 32 90" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" fill="none"/>
+                <path d="M50 53 Q50 72 50 92" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                <path d="M58 52 Q65 70 68 90" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" fill="none"/>
+                <path d="M68 50 Q80 65 85 85" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            </svg>
+        </div>
+    </div>
+    <h1 class="splash-title">OSB</h1>
+    <p class="splash-sub">متجر التطبيقات والألعاب</p>
+    <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+    <div class="splash-dev">تم تطويره بواسطة <span>OSB SOFT</span></div>
+</div>
+
+<!-- WELCOME SCREEN -->
+<div class="welcome-screen" id="welcomeScreen">
+    <div class="welcome-brand">
+        <div class="logo-icon">O</div>
+        <h1>OSB</h1>
+        <p>متجر التطبيقات والألعاب</p>
+    </div>
+    <div class="welcome-options">
+        <button class="welcome-btn primary" onclick="openAuth(); hideWelcome()">
+            <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+        </button>
+        <button class="welcome-btn" onclick="hideWelcome(); showToast('i','مرحباً بك','يمكنك تصفح المتجر كزائر')">
+            <i class="fas fa-user"></i> الدخول كزائر
+        </button>
+        <div class="welcome-divider">أو</div>
+        <button class="welcome-btn" onclick="openAuth(); switchTab('register'); hideWelcome()">
+            <i class="fas fa-user-plus"></i> إنشاء حساب جديد
+        </button>
+        <button class="welcome-btn admin" onclick="openAdminAuth(); hideWelcome()">
+            <i class="fas fa-shield-alt"></i> تسجيل دخول كمسؤول
+        </button>
+    </div>
+    <div class="welcome-footer">&copy; 2026 OSB SOFT - جميع الحقوق محفوظة</div>
+</div>
+
+<!-- Theme Toggle -->
+<button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="تبديل الوضع"><i class="fas fa-moon"></i></button>
+
+<!-- AI Assistant -->
+<button class="ai-btn" onclick="toggleAI()" title="المساعد الذكي"><i class="fas fa-robot"></i></button>
+<div class="ai-chat" id="aiChat">
+    <div class="ai-header">
+        <i class="fas fa-robot"></i>
+        <div><h4>مساعد OSB</h4></div>
+        <span>AI</span>
+        <button onclick="toggleAI()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="ai-body" id="aiBody">
+        <div class="ai-msg">مرحباً! أنا مساعد OSB الذكي. كيف يمكنني مساعدتك اليوم؟ يمكنني البحث عن التطبيقات أو الإجابة على استفساراتك.</div>
+    </div>
+    <div class="ai-input">
+        <input type="text" id="aiInp" placeholder="اكتب رسالتك..." onkeypress="if(event.key==='Enter')sendAI()">
+        <button onclick="sendAI()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<!-- AUTH MODALS -->
+<div class="auth-o" id="authOverlay">
+    <div class="auth-c">
+        <button class="auth-x" onclick="closeAuth()"><i class="fas fa-times"></i></button>
+        <div class="auth-logo"><h1>OSB</h1><p>متجر التطبيقات والألعاب</p></div>
+        <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchTab('login')">تسجيل الدخول</button>
+            <button class="auth-tab" onclick="switchTab('register')">حساب جديد</button>
+        </div>
+        <form class="auth-f active" id="loginForm" onsubmit="handleLogin(event)">
+            <div class="fg" id="lgUserFg">
+                <label>اسم المستخدم أو البريد</label>
+                <input type="text" id="loginUser" placeholder="أدخل اسم المستخدم" required autocomplete="off">
+                <span class="error-msg">يرجى إدخال اسم المستخدم</span>
+            </div>
+            <div class="fg" id="lgPassFg">
+                <label>كلمة المرور</label>
+                <input type="password" id="loginPass" placeholder="أدخل كلمة المرور" required autocomplete="current-password">
+                <span class="error-msg">يرجى إدخال كلمة المرور</span>
+            </div>
+            <button type="submit" class="auth-btn" id="loginBtn"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</button>
+            <div class="auth-sw">ليس لديك حساب؟ <a onclick="switchTab('register')">سجل الآن</a></div>
+        </form>
+        <form class="auth-f" id="registerForm" onsubmit="handleRegister(event)">
+            <div class="fg" id="rgUserFg">
+                <label>اسم المستخدم</label>
+                <input type="text" id="regUser" placeholder="اختر اسم مستخدم" required autocomplete="off" minlength="3" maxlength="20">
+                <span class="error-msg">اسم المستخدم يجب أن يكون بين 3 و 20 حرف</span>
+            </div>
+            <div class="fg" id="rgEmailFg">
+                <label>البريد الإلكتروني</label>
+                <input type="email" id="regEmail" placeholder="أدخل بريدك" required autocomplete="off">
+                <span class="error-msg">يرجى إدخال بريد إلكتروني صحيح</span>
+            </div>
+            <div class="fg" id="rgPassFg">
+                <label>كلمة المرور</label>
+                <input type="password" id="regPass" placeholder="اختر كلمة مرور (6 أحرف على الأقل)" required autocomplete="new-password" minlength="6">
+                <span class="error-msg">كلمة المرور يجب أن تكون 6 أحرف على الأقل</span>
+            </div>
+            <div class="fg" id="rgConfirmFg">
+                <label>تأكيد كلمة المرور</label>
+                <input type="password" id="regConfirm" placeholder="أعد إدخالها" required autocomplete="new-password">
+                <span class="error-msg">كلمتا المرور غير متطابقتين</span>
+            </div>
+            <button type="submit" class="auth-btn" id="regBtn"><i class="fas fa-user-plus"></i> إنشاء حساب</button>
+            <div class="auth-sw">لديك حساب؟ <a onclick="switchTab('login')">سجل دخول</a></div>
+        </form>
+        <div class="admin-link">
+            <p>هل أنت مسؤول؟</p>
+            <button class="admin-btn" onclick="openAdminAuth()"><i class="fas fa-shield-alt"></i> تسجيل دخول كمسؤول</button>
+        </div>
+    </div>
+</div>
+
+<!-- ADMIN AUTH -->
+<div class="auth-o" id="adminAuthOverlay">
+    <div class="auth-c">
+        <button class="auth-x" onclick="closeAdminAuth()"><i class="fas fa-times"></i></button>
+        <div class="auth-logo"><h1><span class="admin-badge">ADMIN</span>OSB</h1><p>لوحة تحكم المسؤول</p></div>
+        <form onsubmit="handleAdminLogin(event)">
+            <div class="fg" id="adUserFg">
+                <label>اسم المسؤول</label>
+                <input type="password" id="adminUser" placeholder="admin" required autocomplete="off">
+                <span class="error-msg">يرجى إدخال اسم المسؤول</span>
+            </div>
+            <div class="fg" id="adPassFg">
+                <label>كلمة المرور</label>
+                <input type="password" id="adminPass" placeholder="osb2026" required autocomplete="off">
+                <span class="error-msg">يرجى إدخال كلمة المرور</span>
+            </div>
+            <button type="submit" class="auth-btn" style="background:linear-gradient(135deg,#ff416c,#ff4b2b)" id="adminLoginBtn"><i class="fas fa-shield-alt"></i> دخول المسؤول</button>
+        </form>
+    </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-c" id="toastContainer"></div>
+
+<!-- DOWNLOAD PROGRESS -->
+<div class="down-prog" id="downProg">
+    <div class="dh"><h4><i class="fas fa-download"></i> جاري التحميل...</h4><button onclick="closeDown()"><i class="fas fa-times"></i></button></div>
+    <div class="pbar"><div class="pfill" id="pfill"></div></div>
+    <div class="pinfo"><span id="ppercent">0%</span><span id="psize">0 MB / 0 MB</span></div>
+    <div class="pacts">
+        <button onclick="pauseDown()" id="pauseBtn"><i class="fas fa-pause"></i> إيقاف</button>
+        <button onclick="cancelDown()" style="color:var(--danger)"><i class="fas fa-times-circle"></i> إلغاء</button>
+    </div>
+</div>
+
+<!-- APP MODAL (Add/Edit) -->
+<div class="modal-o" id="appModal">
+    <div class="modal-c">
+        <h2><i class="fas fa-plus-circle"></i> <span id="modalTitle">إضافة تطبيق</span></h2>
+        <form id="appForm" onsubmit="saveApp(event)">
+            <input type="hidden" id="editAppId">
+            <div class="f-row">
+                <div class="fg"><label>الاسم *</label><input type="text" id="appName" required></div>
+                <div class="fg"><label>المنصة *</label><select id="appPlatform" required>
+                    <option value="android">Android</option>
+                    <option value="ios">iOS</option>
+                    <option value="pc">PC</option>
+                    <option value="ps">PlayStation</option>
+                    <option value="xbox">Xbox</option>
+                </select></div>
+            </div>
+            <div class="fg"><label>الفئة *</label><select id="appCategory" required>
+                <option value="apps">تطبيقات</option>
+                <option value="games">ألعاب</option>
+                <option value="tools">أدوات</option>
+                <option value="media">وسائط</option>
+            </select></div>
+            <div class="fg"><label>الوصف *</label><textarea id="appDesc" required rows="3"></textarea></div>
+            <div class="f-row">
+                <div class="fg"><label>الحجم (MB) *</label><input type="number" id="appSize" required min="1"></div>
+                <div class="fg"><label>التقييم</label><input type="number" id="appRating" min="1" max="5" step="0.1" value="4.5" required></div>
+            </div>
+            <div class="fg"><label>رابط التحميل *</label><input type="url" id="appUrl" placeholder="https://..." required></div>
+            <div class="fg"><label>الشارة</label><select id="appBadge">
+                <option value="">بدون</option>
+                <option value="new">جديد</option>
+                <option value="hot">شائع</option>
+                <option value="premium">مميز</option>
+            </select></div>
+            <div class="macts">
+                <button type="button" class="btn-c" onclick="closeModal()"><i class="fas fa-times"></i> إلغاء</button>
+                <button type="submit" class="btn-s"><i class="fas fa-save"></i> حفظ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- APP DETAIL MODAL -->
+<div class="detail-modal" id="detailModal">
+    <div class="detail-c">
+        <button class="detail-close" onclick="closeDetail()"><i class="fas fa-times"></i></button>
+        <div class="detail-header" id="detailHeader"><span id="detailIcon">🎮</span></div>
+        <div class="detail-body">
+            <h2 id="detailName">اسم التطبيق</h2>
+            <div class="detail-meta">
+                <span><i class="fas fa-star"></i> <span id="detailRating">4.5</span></span>
+                <span><i class="fas fa-download"></i> <span id="detailDownloads">0</span></span>
+                <span><i class="fas fa-hdd"></i> <span id="detailSize">0 MB</span></span>
+                <span><i class="fas fa-tag"></i> <span id="detailPlatform">Android</span></span>
+                <span><i class="fas fa-folder"></i> <span id="detailCategory">ألعاب</span></span>
+            </div>
+            <div class="detail-desc" id="detailDesc">وصف التطبيق...</div>
+            <div class="detail-screenshots">
+                <div class="detail-screenshot"><i class="fas fa-image"></i></div>
+                <div class="detail-screenshot"><i class="fas fa-image"></i></div>
+                <div class="detail-screenshot"><i class="fas fa-image"></i></div>
+            </div>
+            <div class="detail-actions">
+                <button class="btn-p" onclick="downloadFromDetail()" id="detailDlBtn"><i class="fas fa-download"></i> تحميل الآن</button>
+                <button class="btn-p" style="background:transparent;border:2px solid var(--gold);color:var(--gold)" onclick="toggleFavFromDetail()"><i class="far fa-heart" id="detailFavIcon"></i> المفضلة</button>
+                <button class="btn-p" style="background:transparent;border:2px solid var(--info);color:var(--info)" onclick="shareApp()"><i class="fas fa-share-alt"></i> مشاركة</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="h-inner">
+        <div class="logo" onclick="showSec('home')">
+            <div class="logo-icon">O</div>
+            <div class="logo-text">OSB</div>
+        </div>
+        <nav class="nav">
+            <button class="nav-link active" onclick="showSec('home')">الرئيسية</button>
+            <button class="nav-link" onclick="showSec('apps')">التطبيقات</button>
+            <button class="nav-link" onclick="showSec('games')">الألعاب</button>
+            <button class="nav-link" onclick="showSec('pc')">PC</button>
+            <button class="nav-link" onclick="showSec('downloads')" id="downNav"><i class="fas fa-download"></i> التنزيلات <span id="downBadge" style="display:none;background:var(--danger);color:white;padding:2px 6px;border-radius:10px;font-size:10px;margin-right:5px">0</span></button>
+            <button class="nav-link" onclick="showSec('admin')" id="adminNav" style="display:none">لوحة التحكم</button>
+        </nav>
+        <div class="search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInp" placeholder="ابحث عن تطبيق أو لعبة..." oninput="doSearch(this.value)">
+            <button class="search-clear" onclick="clearSearch()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="user" id="userMenu">
+            <button class="btn-p" onclick="openAuth()"><i class="fas fa-user"></i> دخول</button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- HOME -->
+    <section id="homeSec">
+        <div class="hero">
+            <div class="hero-badge" onclick="showSec('apps')"><i class="fas fa-star"></i> أكثر من 10,000 تطبيق ولعبة</div>
+            <h1>اكتشف عالماً من<br><span>التطبيقات والألعاب</span></h1>
+            <p>منصة OSB توفر لك أحدث التطبيقات والألعاب لجميع المنصات بتحميل مباشر وسريع</p>
+            <div style="display:flex;gap:15px;justify-content:center;flex-wrap:wrap">
+                <button class="btn-p" style="padding:14px 35px;font-size:16px" onclick="showSec('apps')"><i class="fas fa-rocket"></i> استكشف</button>
+                <button class="btn-p" style="padding:14px 35px;font-size:16px;background:transparent;border:2px solid var(--gold);color:var(--gold)" onclick="openAuth()"><i class="fas fa-user-plus"></i> سجل</button>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item"><div class="stat-value" id="statApps">12,500+</div><div class="stat-label">تطبيق ولعبة</div></div>
+                <div class="stat-item"><div class="stat-value" id="statUsers">850K+</div><div class="stat-label">مستخدم</div></div>
+                <div class="stat-item"><div class="stat-value" id="statDowns">5M+</div><div class="stat-label">تحميل</div></div>
+                <div class="stat-item"><div class="stat-value">99.9%</div><div class="stat-label">جاهزية</div></div>
+            </div>
+        </div>
+        <div class="categories">
+            <h2 class="sec-title"><i class="fas fa-th-large"></i> الفئات</h2>
+            <p class="sec-sub">اختر الفئة التي تهمك</p>
+            <div class="cat-grid">
+                <div class="cat-card" onclick="showSec('apps');filterByPlatform('android')"><div class="cat-icon"><i class="fab fa-android"></i></div><h3>أندرويد</h3><p>أفضل تطبيقات Android</p></div>
+                <div class="cat-card" onclick="showSec('apps');filterByPlatform('ios')"><div class="cat-icon"><i class="fab fa-apple"></i></div><h3>iOS</h3><p>تطبيقات iPhone و iPad</p></div>
+                <div class="cat-card" onclick="showSec('pc')"><div class="cat-icon"><i class="fas fa-desktop"></i></div><h3>PC</h3><p>برامج الكمبيوتر</p></div>
+                <div class="cat-card" onclick="showSec('games');filterByPlatform('ps')"><div class="cat-icon"><i class="fab fa-playstation"></i></div><h3>PlayStation</h3><p>ألعاب PS4 و PS5</p></div>
+                <div class="cat-card" onclick="showSec('games');filterByPlatform('xbox')"><div class="cat-icon"><i class="fab fa-xbox"></i></div><h3>Xbox</h3><p>ألعاب Xbox Series</p></div>
+                <div class="cat-card" onclick="showSec('games');filterByPlatform('pc')"><div class="cat-icon"><i class="fas fa-dice"></i></div><h3>ألعاب PC</h3><p>ألعاب الكمبيوتر</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- APPS -->
+    <section class="apps-sec" id="appsSec">
+        <h2 class="sec-title"><i class="fas fa-fire"></i> الأكثر شيوعاً</h2>
+        <p class="sec-sub">أفضل التطبيقات والألعاب المختارة</p>
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterApps('all', this)">الكل</button>
+            <button class="filter-btn" onclick="filterApps('android', this)">Android</button>
+            <button class="filter-btn" onclick="filterApps('ios', this)">iOS</button>
+            <button class="filter-btn" onclick="filterApps('pc', this)">PC</button>
+            <button class="filter-btn" onclick="filterApps('ps', this)">PlayStation</button>
+            <button class="filter-btn" onclick="filterApps('xbox', this)">Xbox</button>
+            <select class="sort-select" id="sortSelect" onchange="sortApps(this.value)">
+                <option value="popular">الأكثر شيوعاً</option>
+                <option value="rating">الأعلى تقييماً</option>
+                <option value="newest">الأحدث</option>
+                <option value="size_asc">الحجم: صغير إلى كبير</option>
+                <option value="size_desc">الحجم: كبير إلى صغير</option>
+            </select>
+        </div>
+        <div class="apps-grid" id="appsGrid"></div>
+        <div class="pagination" id="pagination"></div>
+    </section>
+
+    <!-- DOWNLOADS -->
+    <section class="down-sec" id="downSec">
+        <div class="down-header">
+            <h2><i class="fas fa-download"></i> التنزيلات</h2>
+            <div style="display:flex;gap:10px">
+                <button class="btn-p" onclick="clearComp()" style="padding:8px 16px;font-size:12px"><i class="fas fa-trash"></i> مسح المكتملة</button>
+                <button class="btn-p" onclick="clearAllDowns()" style="padding:8px 16px;font-size:12px;background:var(--danger)"><i class="fas fa-trash-alt"></i> مسح الكل</button>
+            </div>
+        </div>
+        <div class="down-list" id="downList"></div>
+    </section>
+
+    <!-- ADMIN -->
+    <section class="admin" id="adminSec">
+        <div class="ad-header">
+            <div>
+                <h2 style="font-size:22px;display:flex;align-items:center;gap:10px"><i class="fas fa-cog" style="color:var(--gold)"></i> لوحة التحكم</h2>
+                <p style="color:var(--text-muted);margin-top:4px;font-size:13px">إدارة التطبيقات والمستخدمين</p>
+            </div>
+            <button class="btn-add" onclick="openAddModal()"><i class="fas fa-plus"></i> إضافة تطبيق</button>
+        </div>
+        <div class="ad-stats">
+            <div class="ad-card"><div class="ad-icon b"><i class="fas fa-download"></i></div><div class="ad-info"><h3 id="adDown">125,430</h3><p>إجمالي التحميلات</p></div></div>
+            <div class="ad-card"><div class="ad-icon g"><i class="fas fa-check-circle"></i></div><div class="ad-info"><h3 id="adApps">1,240</h3><p>تطبيق نشط</p></div></div>
+            <div class="ad-card"><div class="ad-icon go"><i class="fas fa-users"></i></div><div class="ad-info"><h3 id="adUsers">45,230</h3><p>مستخدم مسجل</p></div></div>
+            <div class="ad-card"><div class="ad-icon r"><i class="fas fa-chart-line"></i></div><div class="ad-info"><h3>+23%</h3><p>نمو هذا الشهر</p></div></div>
+        </div>
+        <div class="ad-table">
+            <div class="ad-th">
+                <h3><i class="fas fa-list" style="color:var(--gold)"></i> قائمة التطبيقات</h3>
+                <input type="text" class="ad-search" id="adminSearch" placeholder="بحث..." oninput="searchAdmin(this.value)">
+            </div>
+            <table>
+                <thead>
+                    <tr><th>التطبيق</th><th>المنصة</th><th>الفئة</th><th>الحجم</th><th>التقييم</th><th>التحميلات</th><th>الإجراءات</th></tr>
+                </thead>
+                <tbody id="adminBody"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="f-inner">
+        <div class="f-brand">
+            <h2>OSB</h2>
+            <p>منصة OSB هي وجهتك الأولى لتحميل أحدث التطبيقات والألعاب لجميع المنصات. نوفر لك تجربة تحميل آمنة وسريعة.</p>
+            <div class="social">
+                <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" title="Telegram"><i class="fab fa-telegram"></i></a>
+                <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="f-links">
+            <h4>المنصات</h4>
+            <a href="#" onclick="showSec('apps');filterByPlatform('android');return false">Android</a>
+            <a href="#" onclick="showSec('apps');filterByPlatform('ios');return false">iOS</a>
+            <a href="#" onclick="showSec('pc');return false">PC</a>
+            <a href="#" onclick="showSec('games');filterByPlatform('ps');return false">PlayStation</a>
+            <a href="#" onclick="showSec('games');filterByPlatform('xbox');return false">Xbox</a>
+        </div>
+        <div class="f-links">
+            <h4>الفئات</h4>
+            <a href="#" onclick="showSec('apps');return false">تطبيقات</a>
+            <a href="#" onclick="showSec('games');return false">ألعاب</a>
+            <a href="#" onclick="showSec('apps');filterByCategory('tools');return false">أدوات</a>
+            <a href="#" onclick="showSec('apps');filterByCategory('media');return false">وسائط</a>
+        </div>
+        <div class="f-links">
+            <h4>الدعم</h4>
+            <a href="#" onclick="showToast('i','قريباً','سيتم إضافة مركز المساعدة قريباً');return false">مركز المساعدة</a>
+            <a href="#" onclick="showToast('i','قريباً','سيتم إضافة الشروط قريباً');return false">الشروط</a>
+            <a href="#" onclick="showToast('i','قريباً','سيتم إضافة الخصوصية قريباً');return false">الخصوصية</a>
+            <a href="#" onclick="showToast('i','قريباً','سيتم إضافة التواصل قريباً');return false">تواصل معنا</a>
+        </div>
+    </div>
+    <div class="f-bottom">
+        <p>&copy; 2026 OSB. جميع الحقوق محفوظة.</p>
+        <p>تم تطويره بواسطة <span style="color:var(--gold);font-weight:700">OSB SOFT</span></p>
+    </div>
+</footer>
+            <button class="filter-btn" onclick="filterApps('pc', this)">PC</button>
+            <button class="filter-btn" onclick="filterApps('ps', this)">PlayStation</button>
+            <button class="filter-btn" onclick="filterApps('xbox', this)">Xbox</button>
+            <select class="sort-select" id="sortSelect" onchange="sortApps(this.value)">
+                <option value="popular">الأكثر شيوعاً</option>
+                <option value="rating">الأعلى تقييماً</option>
+                <option value="newest">الأحدث</option>
+                <option value="size_asc">الحجم: صغير إلى كبير</option>
+                <option value="size_desc">الحجم: كبير إلى صغير</option>
+            </select>
+        </div>
+        <div class="apps-grid" id="appsGrid"></div>
+        <div class="pagination" id="pagination"></div>
+    </section>
+
+    <!-- DOWNLOADS -->
+    <section class="down-sec" id="downSec">
+        <div class="down-header">
+            <h2><i class="fas fa-download"></i> التنزيلات</h2>
+            <div style="display:flex;gap:10px">
+                <button class="btn-p" onclick="clearComp()" style="padding:8px 16px;font-size:12px"><i class="fas fa-trash"></i> مسح المكتملة</button>
+                <button class="btn-p" onclick="clearAllDowns()" style="padding:8px 16px;font-size:12px;background:var(--danger)"><i class="fas fa-trash-alt"></i> مسح الكل</button>
+            </div>
+        </div>
+        <div class="down-list" id="downList"></div>
+    </section>
+
+    <!-- ADMIN -->
+    <section class="admin" id="adminSec">
+        <div class="ad-header">
+            <div>
+                <h2 style="font-size:22px;display:flex;align-items:center;gap:10px"><i class="fas fa-cog" style="color:var(--gold)"></i> لوحة التحكم</h2>
+                <p style="color:var(--text-muted);margin-top:4px;font-size:13px">إدارة التطبيقات والمستخدمين</p>
+            </div>
+            <button class="btn-add" onclick="openAddModal()"><i class="fas fa-plus"></i> إضافة تطبيق</button>
+        </div>
+        <div class="ad-stats">
+            <div class="ad-card"><div class="ad-icon b"><i class="fas fa-download"></i></div><div class="ad-info"><h3 id="adDown">125,430</h3><p>إجمالي التحميلات</p></div></div>
+            <div class="ad-card"><div class="ad-icon g"><i class="fas fa-check-circle"></i></div><div class="ad-info"><h3 id="adApps">1,240</h3><p>تطبيق نشط</p></div></div>
+            <div class="ad-card"><div class="ad-icon go"><i class="fas fa-users"></i></div><div class="ad-info"><h3 id="adUsers">45,230</h3><p>مستخدم مسجل</p></div></div>
+            <div class="ad-card"><div class="ad-icon r"><i class="fas fa-chart-line"></i></div><div class="ad-info"><h3>+23%</h3><p>نمو هذا الشهر</p></div></div>
+        </div>
+        <div class="ad-table">
+            <div class="ad-th">
+                <h3><i class="fas fa-list" style="color:var(--gold)"></i> قائمة التطبيقات</h3>
+                <input type="text" class="ad-search" id="adminSearch" placeholder="بحث..." oninput="searchAdmin(this.value)">
+            </div>
+            <table>
+                <thead>
+                    <tr><th>التطبيق</th><th>المنصة</th><th>الفئة</th><th>الحجم</th><th>التقييم</th><th>التحميلات</th><th>الإجراءات</th></tr>
+                </thead>
+                <tbody id="adminBody"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="f-inner">
+        <div class="f-brand">
+            <h2>OSB</h2>
+            <p>منصة OSB هي وجهتك الأولى لتحميل أحدث التطبيقات والألعاب لجميع المنصات. نوفر لك تجربة تحميل آمنة وسريعة.</p>
+            <div class="social">
+                <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" title="Telegram"><i class="fab fa-telegram"></i></a>
+                <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="f-links">
+            <h4>المنصات</h4>
+            <a href="#" onclick="showSec('apps');filterByPlatform('android');return false">Android</a>
+            <a href="#" onclick="showSec('apps');filterByPlatform('ios');return false">iOS</a>
+            <a href="#" onclick="showSec('pc');return false">PC</a>
+            <a href="#" onclick="showSec('games');filterByPlatform('ps');return false">PlayStation</a>
+            <a href="#" onclick="showSec('games');filterByPlatform('xbox');return false">Xbox</a>
+        </div>
+        <div class="f-links">
+            <h4>الفئات</h4>
+            <a href="#" onclick="showSec('apps');return false">تطبيقات</a>
+            <a href="#" onclick="showSec('games');return false">ألعاب</a>
+            <a href="#" onclick="showSec('apps');filterByCategory('tools');return false">أدوات</a>
+            <a href="#" onclick="showSec('apps');filterByCategory('media');return false">وسائط</a>
+        </div>
+        <div class="f-links">
+            <h4>الدعم</h4>
+            <a href="#" onclick="showToast('i','قريباً','سيتم إضافة مركز المساعدة قريباً');return false">مركز المساعدة</a>
+            <a href="#" onclick="showToast('i','قريباً','سيتم إضافة الشروط قريباً');return false">الشروط</a>
+            <a href="#" onclick="showToast('i','قريباً','سيتم إضافة الخصوصية قريباً');return false">الخصوصية</a>
+            <a href="#" onclick="showToast('i','قريباً','سيتم إضافة التواصل قريباً');return false">تواصل معنا</a>
+        </div>
+    </div>
+    <div class="f-bottom">
+        <p>&copy; 2026 OSB. جميع الحقوق محفوظة.</p>
+        <p>تم تطويره بواسطة <span style="color:var(--gold);font-weight:700">OSB SOFT</span></p>
+    </div>
+</footer>
+
+<script>
+// ===== STATE MANAGEMENT =====
+let currentUser = null;
+let isAdmin = false;
+let dlInt = null;
+let curDl = null;
+let isPaused = false;
+let apps = [];
+let users = [];
+let isDark = true;
+let downloads = [];
+let favorites = [];
+let currentFilter = 'all';
+let currentSort = 'popular';
+let currentPage = 1;
+let itemsPerPage = 12;
+let currentDetailApp = null;
+
+// ===== SAMPLE DATA =====
+const sampleApps = [
+    {id:1, name:"PUBG Mobile", platform:"android", category:"games", size:850, rating:4.5, downloads:125000, desc:"لعبة battle royale الشهيرة مع رسومات عالية الجودة وأسلحة متنوعة", icon:"🎮", badge:"hot", url:"https://play.google.com/store/apps/details?id=com.tencent.ig", createdAt:"2026-01-15"},
+    {id:2, name:"FIFA 2026", platform:"ps", category:"games", size:45000, rating:4.8, downloads:89000, desc:"أفضل لعبة كرة قدم محاكاة واقعية مع فرق حقيقية وملاعب 4K", icon:"⚽", badge:"new", url:"https://store.playstation.com", createdAt:"2026-04-20"},
+    {id:3, name:"Adobe Photoshop", platform:"pc", category:"tools", size:3200, rating:4.9, downloads:67000, desc:"أقوى برنامج تعديل صور احترافي مع أدوات متقدمة للمصممين", icon:"🎨", badge:"premium", url:"https://www.adobe.com/products/photoshop.html", createdAt:"2025-11-10"},
+    {id:4, name:"Call of Duty", platform:"xbox", category:"games", size:120000, rating:4.6, downloads:54000, desc:"لعبة الحرب الأولى مع طور قصة ملحمي وأونلاين متقدم", icon:"🔫", badge:"hot", url:"https://www.xbox.com/games/call-of-duty", createdAt:"2026-02-05"},
+    {id:5, name:"Spotify", platform:"ios", category:"media", size:180, rating:4.7, downloads:210000, desc:"أفضل تطبيق موسيقى بجودة عالية وقوائم تشغيل ذكية", icon:"🎵", badge:"premium", url:"https://apps.apple.com/app/spotify-music/id324684580", createdAt:"2025-08-20"},
+    {id:6, name:"Minecraft", platform:"pc", category:"games", size:1200, rating:4.9, downloads:156000, desc:"عالم مفتوح بلا حدود للإبداع والمغامرات مع الأصدقاء", icon:"⛏️", badge:"hot", url:"https://www.minecraft.net", createdAt:"2025-06-01"},
+    {id:7, name:"Instagram", platform:"android", category:"apps", size:95, rating:4.3, downloads:320000, desc:"شبكة التواصل الاجتماعي لمشاركة الصور والفيديوهات", icon:"📷", badge:"", url:"https://play.google.com/store/apps/details?id=com.instagram.android", createdAt:"2025-12-01"},
+    {id:8, name:"God of War", platform:"ps", category:"games", size:65000, rating:5, downloads:78000, desc:"مغامرة إلهية ملحمية مع كريتوس في عالم الشمال", icon:"⚔️", badge:"premium", url:"https://store.playstation.com", createdAt:"2026-03-15"},
+    {id:9, name:"VS Code", platform:"pc", category:"tools", size:350, rating:4.8, downloads:145000, desc:"أفضل محرر أكواد مجاني مع إضافات قوية ودعم لجميع اللغات", icon:"💻", badge:"", url:"https://code.visualstudio.com/download", createdAt:"2025-09-10"},
+    {id:10, name:"PPSSPP Emulator", platform:"android", category:"tools", size:45, rating:4.8, downloads:520000, desc:"أفضل محاكي PSP للأندرويد مع دعم الألعاب الكلاسيكية", icon:"🎮", badge:"hot", url:"https://www.ppsspp.org/download.html", createdAt:"2025-07-25"},
+    {id:11, name:"Netflix", platform:"android", category:"media", size:85, rating:4.6, downloads:280000, desc:"أفضل منصة لمشاهدة الأفلام والمسلسلات بجودة 4K", icon:"🎬", badge:"premium", url:"https://play.google.com/store/apps/details?id=com.netflix.mediaclient", createdAt:"2025-10-15"},
+    {id:12, name:"GTA V", platform:"pc", category:"games", size:95000, rating:4.9, downloads:198000, desc:"لعبة عالم مفتوح ملحمية مع طور أونلاين متطور", icon:"🚗", badge:"hot", url:"https://store.rockstargames.com/game/buy-gta-v", createdAt:"2025-05-20"},
+    {id:13, name:"WhatsApp", platform:"ios", category:"apps", size:120, rating:4.4, downloads:450000, desc:"أشهر تطبيق مراسلة فورية مع مكالمات صوتية وفيديو", icon:"💬", badge:"", url:"https://apps.apple.com/app/whatsapp-messenger/id310633997", createdAt:"2025-11-25"},
+    {id:14, name:"Forza Horizon 5", platform:"xbox", category:"games", size:85000, rating:4.7, downloads:65000, desc:"أفضل لعبة سباقات سيارات مع عالم مفتوح رائع", icon:"🏎️", badge:"new", url:"https://www.xbox.com/games/forza-horizon-5", createdAt:"2026-01-30"},
+    {id:15, name:"Chrome", platform:"pc", category:"tools", size:280, rating:4.5, downloads:380000, desc:"أسرع متصفح إنترنت مع مزامنة عبر الأجهزة", icon:"🌐", badge:"", url:"https://www.google.com/chrome/", createdAt:"2025-08-01"}
+];
+
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        document.getElementById('splash').classList.add('done');
+    }, 3500);
+    
+    loadData();
+    loadTheme();
+    loadDownloads();
+    loadFavorites();
+
+    const su = localStorage.getItem('osb_user');
+    const sa = localStorage.getItem('osb_admin');
+    if (sa) {
+        isAdmin = true;
+        currentUser = JSON.parse(sa);
+        updateUIAdmin();
+    } else if (su) {
+        currentUser = JSON.parse(su);
+        updateUIUser();
+    }
+
+    renderApps();
+    renderAdmin();
+    renderDownloads();
+    updateStats();
+    updateDownBadge();
+
+    document.addEventListener('keydown', handleKeydown);
+
+    document.getElementById('appModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('appModal')) closeModal();
+    });
+    document.getElementById('detailModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('detailModal')) closeDetail();
+    });
+    document.getElementById('authOverlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('authOverlay')) closeAuth();
+    });
+    document.getElementById('adminAuthOverlay').addEventListener('click', e => {
+        if (e.target === document.getElementById('adminAuthOverlay')) closeAdminAuth();
+    });
+});
+
+function handleKeydown(e) {
+    if (e.key === 'Escape') {
+        closeAuth(); closeAdminAuth(); closeModal(); closeDetail(); closeDown();
+        document.getElementById('aiChat').classList.remove('active');
+    }
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        document.getElementById('searchInp').focus();
+    }
+}
+
+// ===== WELCOME SCREEN =====
+function hideWelcome() {
+    document.getElementById('welcomeScreen').classList.add('done');
+}
+
+// ===== DATA MANAGEMENT =====
+function loadData() {
+    const a = localStorage.getItem('osb_apps');
+    const u = localStorage.getItem('osb_users');
+    apps = a ? JSON.parse(a) : [...sampleApps];
+    users = u ? JSON.parse(u) : [];
+    if (apps.length === 0) apps = [...sampleApps];
+}
+
+function saveData() {
+    localStorage.setItem('osb_apps', JSON.stringify(apps));
+    localStorage.setItem('osb_users', JSON.stringify(users));
+}
+
+function loadDownloads() {
+    const d = localStorage.getItem('osb_downloads');
+    downloads = d ? JSON.parse(d) : [];
+}
+
+function saveDownloads() {
+    localStorage.setItem('osb_downloads', JSON.stringify(downloads));
+    updateDownBadge();
+}
+
+function loadFavorites() {
+    const f = localStorage.getItem('osb_favorites');
+    favorites = f ? JSON.parse(f) : [];
+}
+
+function saveFavorites() {
+    localStorage.setItem('osb_favorites', JSON.stringify(favorites));
+}
+
+function updateDownBadge() {
+    const badge = document.getElementById('downBadge');
+    const active = downloads.filter(d => d.status === 'downloading').length;
+    if (active > 0) {
+        badge.textContent = active;
+        badge.style.display = 'inline';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function updateStats() {
+    document.getElementById('statApps').textContent = apps.length.toLocaleString() + '+';
+    document.getElementById('statUsers').textContent = users.length.toLocaleString() + 'K+';
+    const totalDowns = apps.reduce((a, b) => a + b.downloads, 0);
+    document.getElementById('statDowns').textContent = (totalDowns / 1000000).toFixed(1) + 'M+';
+}
+
+// ===== THEME =====
+function toggleTheme() {
+    const b = document.getElementById('themeBtn');
+    const h = document.documentElement;
+    isDark = !isDark;
+    if (isDark) {
+        h.removeAttribute('data-theme');
+        b.innerHTML = '<i class="fas fa-moon"></i>';
+        localStorage.setItem('osb_theme', 'dark');
+    } else {
+        h.setAttribute('data-theme', 'light');
+        b.innerHTML = '<i class="fas fa-sun"></i>';
+        localStorage.setItem('osb_theme', 'light');
+    }
+    showToast('i', isDark ? 'وضع ليلي' : 'وضع نهاري', isDark ? 'تم التبديل للوضع الليلي' : 'تم التبديل للوضع النهاري');
+}
+
+function loadTheme() {
+    const s = localStorage.getItem('osb_theme');
+    const b = document.getElementById('themeBtn');
+    if (s === 'light') {
+        isDark = false;
+        document.documentElement.setAttribute('data-theme', 'light');
+        b.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+}
+
+// ===== AI CHAT =====
+function toggleAI() {
+    document.getElementById('aiChat').classList.toggle('active');
+    if (document.getElementById('aiChat').classList.contains('active')) {
+        setTimeout(() => document.getElementById('aiInp').focus(), 100);
+    }
+}
+
+function sendAI() {
+    const i = document.getElementById('aiInp');
+    const m = i.value.trim();
+    if (!m) return;
+    const b = document.getElementById('aiBody');
+    b.innerHTML += '<div class="ai-msg user">' + escapeHtml(m) + '</div>';
+    i.value = '';
+    b.scrollTop = b.scrollHeight;
+
+    setTimeout(() => {
+        let r = '';
+        const lower = m.toLowerCase();
+        if (lower.includes('تحميل') || lower.includes('download')) {
+            r = 'يمكنك البحث عن التطبيق في شريط البحث أعلى الصفحة، ثم اضغط على زر التحميل. هل تريد مساعدة في تحميل شيء معين؟';
+        } else if (lower.includes('بحث') || lower.includes('search')) {
+            r = 'استخدم شريط البحث أعلى الصفحة أو اضغط على / للبحث السريع. يمكنك البحث بالاسم أو المنصة أو الفئة.';
+        } else if (lower.includes('تسجيل') || lower.includes('حساب')) {
+            r = 'يمكنك إنشاء حساب جديد من زر "دخول" في الأعلى. الحساب يتيح لك حفظ المفضلات ومتابعة التنزيلات.';
+        } else if (lower.includes('مشكلة') || lower.includes('خطأ')) {
+            r = 'إذا واجهت مشكلة في التحميل، جرب إيقافه مؤقتاً واستئنافه. أو تواصل مع الدعم الفني.';
+        } else if (lower.includes('ألعاب') || lower.includes('games')) {
+            r = 'لدينا مجموعة كبيرة من الألعاب لجميع المنصات! استكشف قسم الألعاب أو PlayStation أو Xbox.';
+        } else if (lower.includes('تطبيق') || lower.includes('app')) {
+            r = 'نقدم تطبيقات متنوعة لـ Android و iOS و PC. استخدم الفلاتر للعثور على ما تحتاجه.';
+        } else {
+            const responses = [
+                'أفهم ما تقصده. يمكنني مساعدتك في البحث عن التطبيقات أو الألعاب.',
+                'شكراً لتواصلك! هل تريد مساعدة في تحميل شيء معين؟',
+                'يمكنك استخدام شريط البحث للعثور على ما تريد بسرعة.',
+                'إذا كنت تواجه مشكلة في التحميل، جرب إيقافه مؤقتاً واستئنافه.',
+                'نحن نضيف تطبيقات جديدة يومياً! تفقد قسم الأكثر شيوعاً.'
+            ];
+            r = responses[Math.floor(Math.random() * responses.length)];
+        }
+        b.innerHTML += '<div class="ai-msg">' + r + '</div>';
+        b.scrollTop = b.scrollHeight;
+    }, 600);
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ===== AUTH =====
+function openAuth() {
+    document.getElementById('authOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAuth() {
+    document.getElementById('authOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+    document.querySelectorAll('.fg').forEach(fg => fg.classList.remove('error'));
+}
+
+function openAdminAuth() {
+    document.getElementById('adminAuthOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAdminAuth() {
+    document.getElementById('adminAuthOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function switchTab(t) {
+    document.querySelectorAll('.auth-tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.auth-f').forEach(x => x.classList.remove('active'));
+    if (t === 'login') {
+        document.querySelectorAll('.auth-tab')[0].classList.add('active');
+        document.getElementById('loginForm').classList.add('active');
+    } else {
+        document.querySelectorAll('.auth-tab')[1].classList.add('active');
+        document.getElementById('registerForm').classList.add('active');
+    }
+}
+
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value;
+
+    document.getElementById('lgUserFg').classList.remove('error');
+    document.getElementById('lgPassFg').classList.remove('error');
+
+    if (!u) { document.getElementById('lgUserFg').classList.add('error'); return; }
+    if (!p) { document.getElementById('lgPassFg').classList.add('error'); return; }
+
+    const x = users.find(y => (y.username === u || y.email === u) && y.password === p);
+    if (x) {
+        currentUser = x;
+        localStorage.setItem('osb_user', JSON.stringify(x));
+        updateUIUser();
+        closeAuth();
+        showToast('s', 'تم تسجيل الدخول', 'مرحباً ' + x.username);
+    } else {
+        showToast('e', 'خطأ', 'بيانات غير صحيحة');
+        document.getElementById('lgPassFg').classList.add('error');
+    }
+}
+
+function handleRegister(e) {
+    e.preventDefault();
+    const u = document.getElementById('regUser').value.trim();
+    const em = document.getElementById('regEmail').value.trim();
+    const p = document.getElementById('regPass').value;
+    const cp = document.getElementById('regConfirm').value;
+
+    ['rgUserFg', 'rgEmailFg', 'rgPassFg', 'rgConfirmFg'].forEach(id => {
+        document.getElementById(id).classList.remove('error');
+    });
+
+    let hasError = false;
+    if (u.length < 3 || u.length > 20) { document.getElementById('rgUserFg').classList.add('error'); hasError = true; }
+    if (!validateEmail(em)) { document.getElementById('rgEmailFg').classList.add('error'); hasError = true; }
+    if (p.length < 6) { document.getElementById('rgPassFg').classList.add('error'); hasError = true; }
+    if (p !== cp) { document.getElementById('rgConfirmFg').classList.add('error'); hasError = true; }
+    if (users.find(x => x.username === u)) {
+        showToast('e', 'خطأ', 'اسم المستخدم موجود بالفعل');
+        document.getElementById('rgUserFg').classList.add('error');
+        return;
+    }
+    if (users.find(x => x.email === em)) {
+        showToast('e', 'خطأ', 'البريد الإلكتروني مستخدم بالفعل');
+        document.getElementById('rgEmailFg').classList.add('error');
+        return;
+    }
+    if (hasError) return;
+
+    const nu = {
+        id: Date.now(),
+        username: u,
+        email: em,
+        password: p,
+        createdAt: new Date().toISOString()
+    };
+    users.push(nu);
+    saveData();
+    currentUser = nu;
+    localStorage.setItem('osb_user', JSON.stringify(nu));
+    updateUIUser();
+    closeAuth();
+    showToast('s', 'تم الإنشاء', 'مرحباً بك ' + u);
+}
+
+function handleAdminLogin(e) {
+    e.preventDefault();
+    const u = document.getElementById('adminUser').value;
+    const p = document.getElementById('adminPass').value;
+
+    document.getElementById('adUserFg').classList.remove('error');
+    document.getElementById('adPassFg').classList.remove('error');
+
+    if (u === 'admin' && p === 'osb2026') {
+        isAdmin = true;
+        currentUser = { username: 'admin', role: 'admin' };
+        localStorage.setItem('osb_admin', JSON.stringify(currentUser));
+        updateUIAdmin();
+        closeAdminAuth();
+        showToast('s', 'تم الدخول', 'مرحباً بك في لوحة التحكم');
+        showSec('admin');
+    } else {
+        showToast('e', 'خطأ', 'بيانات المسؤول غير صحيحة');
+        document.getElementById('adUserFg').classList.add('error');
+        document.getElementById('adPassFg').classList.add('error');
+    }
+}
+
+function logout() {
+    currentUser = null;
+    isAdmin = false;
+    localStorage.removeItem('osb_user');
+    localStorage.removeItem('osb_admin');
+    document.getElementById('userMenu').innerHTML = '<button class="btn-p" onclick="openAuth()"><i class="fas fa-user"></i> دخول</button>';
+    document.getElementById('adminNav').style.display = 'none';
+    showSec('home');
+    showToast('i', 'تم تسجيل الخروج', 'نراك قريباً');
+}
+
+function updateUIUser() {
+    document.getElementById('userMenu').innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px">
+            <span style="color:var(--gold);font-weight:700">${currentUser.username}</span>
+            <div class="avatar">${currentUser.username.charAt(0).toUpperCase()}</div>
+            <button onclick="logout()" style="color:var(--danger);width:32px;height:32px;border-radius:9px;border:none;background:rgba(255,23,68,0.08);cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>`;
+}
+
+function updateUIAdmin() {
+    document.getElementById('userMenu').innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px">
+            <span style="color:var(--danger);font-weight:800"><i class="fas fa-shield-alt"></i> المسؤول</span>
+            <div class="avatar" style="background:linear-gradient(135deg,#ff416c,#ff4b2b);color:white"><i class="fas fa-crown"></i></div>
+            <button onclick="logout()" style="color:var(--danger);width:32px;height:32px;border-radius:9px;border:none;background:rgba(255,23,68,0.08);cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>`;
+    document.getElementById('adminNav').style.display = 'block';
+}
+
+// ===== NAVIGATION =====
+function showSec(s) {
+    document.getElementById('homeSec').style.display = 'none';
+    document.getElementById('appsSec').classList.remove('active');
+    document.getElementById('downSec').classList.remove('active');
+    document.getElementById('adminSec').classList.remove('active');
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+    if (s === 'home') {
+        document.getElementById('homeSec').style.display = 'block';
+        document.querySelectorAll('.nav-link')[0].classList.add('active');
+    } else if (s === 'apps' || s === 'games' || s === 'pc') {
+        document.getElementById('appsSec').classList.add('active');
+        const idx = s === 'apps' ? 1 : s === 'games' ? 2 : 3;
+        document.querySelectorAll('.nav-link')[idx].classList.add('active');
+        if (s === 'games') { currentFilter = 'games'; }
+        else if (s === 'pc') { currentFilter = 'pc'; }
+        renderApps();
+    } else if (s === 'downloads') {
+        document.getElementById('downSec').classList.add('active');
+        document.querySelectorAll('.nav-link')[4].classList.add('active');
+        renderDownloads();
+    } else if (s === 'admin') {
+        if (!isAdmin) { openAdminAuth(); return; }
+        document.getElementById('adminSec').classList.add('active');
+        document.querySelectorAll('.nav-link')[5].classList.add('active');
+        renderAdmin();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== SEARCH =====
+function doSearch(q) {
+    if (!q.trim()) { renderApps(); return; }
+    const f = apps.filter(a => 
+        a.name.toLowerCase().includes(q.toLowerCase()) ||
+        a.desc.toLowerCase().includes(q.toLowerCase()) ||
+        pn(a.platform).toLowerCase().includes(q.toLowerCase()) ||
+        cn(a.category).toLowerCase().includes(q.toLowerCase())
+    );
+    renderAppList(f);
+}
+
+function clearSearch() {
+    document.getElementById('searchInp').value = '';
+    renderApps();
+}
+
+// ===== APPS RENDERING =====
+function getFilteredApps() {
+    let filtered = [...apps];
+    if (currentFilter === 'games') {
+        filtered = filtered.filter(a => a.category === 'games');
+    } else if (currentFilter === 'pc') {
+        filtered = filtered.filter(a => a.platform === 'pc');
+    } else if (currentFilter !== 'all') {
+        filtered = filtered.filter(a => a.platform === currentFilter);
+    }
+    switch (currentSort) {
+        case 'rating': filtered.sort((a, b) => b.rating - a.rating); break;
+        case 'newest': filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); break;
+        case 'size_asc': filtered.sort((a, b) => a.size - b.size); break;
+        case 'size_desc': filtered.sort((a, b) => b.size - a.size); break;
+        default: filtered.sort((a, b) => b.downloads - a.downloads);
+    }
+    return filtered;
+}
+
+function renderApps() {
+    const filtered = getFilteredApps();
+    const totalPages = Math.ceil(filtered.length / itemsPerPage);
+    if (currentPage > totalPages) currentPage = 1;
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const pageItems = filtered.slice(start, end);
+    renderAppList(pageItems);
+    renderPagination(totalPages);
+}
+
+function renderAppList(list) {
+    const g = document.getElementById('appsGrid');
+    if (list.length === 0) {
+        g.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><h3>لا توجد نتائج</h3><p>جرب البحث بكلمات مختلفة أو تصفح الفئات</p></div>';
+        document.getElementById('pagination').innerHTML = '';
+        return;
+    }
+    g.innerHTML = list.map(a => createCard(a)).join('');
+}
+
+function createCard(a) {
+    const isFav = favorites.includes(a.id);
+    return `
+        <div class="app-card" onclick="openDetail(${a.id})">
+            <div class="app-img">
+                ${a.icon}
+                ${a.badge ? '<span class="app-badge badge-' + a.badge + '">' + (a.badge === 'new' ? 'جديد' : a.badge === 'hot' ? 'شائع' : 'مميز') + '</span>' : ''}
+            </div>
+            <div class="app-info">
+                <div class="app-tags">
+                    <span class="tag">${pn(a.platform)}</span>
+                    <span class="tag">${cn(a.category)}</span>
+                </div>
+                <h3>${a.name}</h3>
+                <p>${a.desc}</p>
+                <div class="app-meta">
+                    <div class="rating"><i class="fas fa-star"></i><span>${a.rating}</span></div>
+                    <span class="size">${fs(a.size)}</span>
+                </div>
+                <div class="app-actions" onclick="event.stopPropagation()">
+                    <button class="btn-d" onclick="startDl(${a.id})" id="btn-${a.id}"><i class="fas fa-download"></i> تحميل</button>
+                    <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav(${a.id}, this)" id="fav-${a.id}">
+                        <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+        </div>`;
+}
+
+function renderPagination(totalPages) {
+    const p = document.getElementById('pagination');
+    if (totalPages <= 1) { p.innerHTML = ''; return; }
+    let html = '';
+    html += '<button class="page-btn" onclick="changePage(' + (currentPage - 1) + ')" ' + (currentPage === 1 ? 'disabled' : '') + '><i class="fas fa-chevron-right"></i></button>';
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            html += '<button class="page-btn ' + (i === currentPage ? 'active' : '') + '" onclick="changePage(' + i + ')">' + i + '</button>';
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+            html += '<span style="color:var(--text-muted);padding:5px">...</span>';
+        }
+    }
+    html += '<button class="page-btn" onclick="changePage(' + (currentPage + 1) + ')" ' + (currentPage === totalPages ? 'disabled' : '') + '><i class="fas fa-chevron-left"></i></button>';
+    p.innerHTML = html;
+}
+
+function changePage(page) {
+    currentPage = page;
+    renderApps();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function filterApps(filter, btn) {
+    currentFilter = filter;
+    currentPage = 1;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderApps();
+}
+
+function filterByPlatform(platform) {
+    currentFilter = platform;
+    currentPage = 1;
+    document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('active');
+        if (b.textContent.includes(pn(platform))) b.classList.add('active');
+    });
+    renderApps();
+}
+
+function filterByCategory(cat) {
+    currentFilter = cat;
+    currentPage = 1;
+    renderApps();
+}
+
+function sortApps(sort) {
+    currentSort = sort;
+    currentPage = 1;
+    renderApps();
+}
+
+// ===== APP DETAIL =====
+function openDetail(id) {
+    const a = apps.find(x => x.id === id);
+    if (!a) return;
+    currentDetailApp = a;
+    document.getElementById('detailIcon').textContent = a.icon;
+    document.getElementById('detailName').textContent = a.name;
+    document.getElementById('detailRating').textContent = a.rating;
+    document.getElementById('detailDownloads').textContent = a.downloads.toLocaleString();
+    document.getElementById('detailSize').textContent = fs(a.size);
+    document.getElementById('detailPlatform').textContent = pn(a.platform);
+    document.getElementById('detailCategory').textContent = cn(a.category);
+    document.getElementById('detailDesc').textContent = a.desc;
+    const isFav = favorites.includes(id);
+    document.getElementById('detailFavIcon').className = isFav ? 'fas fa-heart' : 'far fa-heart';
+    document.getElementById('detailModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+    document.getElementById('detailModal').classList.remove('active');
+    document.body.style.overflow = '';
+    currentDetailApp = null;
+}
+
+function downloadFromDetail() {
+    if (currentDetailApp) { startDl(currentDetailApp.id); closeDetail(); }
+}
+
+function toggleFavFromDetail() {
+    if (currentDetailApp) {
+        toggleFav(currentDetailApp.id, null);
+        const isFav = favorites.includes(currentDetailApp.id);
+        document.getElementById('detailFavIcon').className = isFav ? 'fas fa-heart' : 'far fa-heart';
+    }
+}
+
+function shareApp() {
+    if (!currentDetailApp) return;
+    if (navigator.share) {
+        navigator.share({ title: currentDetailApp.name, text: currentDetailApp.desc, url: window.location.href }).catch(() => {});
+    } else {
+        const text = currentDetailApp.name + ' - ' + currentDetailApp.desc;
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('s', 'تم النسخ', 'تم نسخ معلومات التطبيق');
+        }).catch(() => {
+            showToast('i', 'مشاركة', 'يمكنك نسخ الرابط يدوياً');
+        });
+    }
+}
+
+// ===== FAVORITES =====
+function toggleFav(id, btn) {
+    const idx = favorites.indexOf(id);
+    if (idx > -1) {
+        favorites.splice(idx, 1);
+        showToast('i', 'تم الإزالة', 'تم الإزالة من المفضلة');
+    } else {
+        favorites.push(id);
+        showToast('s', 'تمت الإضافة', 'تمت الإضافة للمفضلة');
+    }
+    saveFavorites();
+    if (btn) {
+        const isFav = favorites.includes(id);
+        btn.classList.toggle('active', isFav);
+        btn.innerHTML = '<i class="' + (isFav ? 'fas' : 'far') + ' fa-heart"></i>';
+    }
+}
+
+// ===== DOWNLOADS =====
+function startDl(id) {
+    const a = apps.find(x => x.id === id);
+    if (!a) return;
+    const existing = downloads.find(d => d.id === id && d.status === 'downloading');
+    if (existing) { showToast('i', 'جاري التحميل', 'هذا التطبيق قيد التحميل بالفعل'); return; }
+
+    curDl = a;
+    isPaused = false;
+    const b = document.getElementById('btn-' + id);
+    if (b) { b.classList.add('down'); b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري...'; }
+
+    const dlItem = { id: id, name: a.name, icon: a.icon, size: a.size, progress: 0, status: 'downloading', date: new Date().toISOString(), url: a.url };
+    downloads.push(dlItem);
+    saveDownloads();
+
+    document.getElementById('downProg').classList.add('active');
+    document.getElementById('pauseBtn').innerHTML = '<i class="fas fa-pause"></i> إيقاف';
+
+    let pr = 0;
+    const ts = a.size;
+    dlInt = setInterval(() => {
+        if (isPaused) return;
+        pr += Math.random() * 2;
+        if (pr >= 100) {
+            pr = 100;
+            clearInterval(dlInt);
+            compDl(id);
+            triggerRealDownload(a);
+        }
+        updateProg(pr, ts);
+        updDlItem(id, pr, 'downloading');
+    }, 200);
+}
+
+function triggerRealDownload(app) {
+    if (app.url && app.url !== '#') {
+        const blob = new Blob([
+            'OSB Store - Download Receipt\n' +
+            '========================\n\n' +
+            'App: ' + app.name + '\n' +
+            'Platform: ' + pn(app.platform) + '\n' +
+            'Size: ' + fs(app.size) + '\n' +
+            'Rating: ' + app.rating + '\n' +
+            'URL: ' + app.url + '\n' +
+            'Date: ' + new Date().toLocaleString('ar-SA') + '\n\n' +
+            'Thank you for using OSB Store!'
+        ], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = app.name.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '_') + '_OSB.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('s', 'تم التحميل', 'تم تحميل ' + app.name + ' بنجاح');
+    }
+}
+
+function updateProg(p, ts) {
+    document.getElementById('pfill').style.width = p + '%';
+    document.getElementById('ppercent').textContent = Math.floor(p) + '%';
+    document.getElementById('psize').textContent = (ts * (p / 100)).toFixed(1) + ' MB / ' + ts + ' MB';
+}
+
+function updDlItem(id, pr, st) {
+    const d = downloads.find(x => x.id === id);
+    if (d) { d.progress = pr; d.status = st; saveDownloads(); }
+}
+
+function pauseDown() {
+    isPaused = !isPaused;
+    const b = document.getElementById('pauseBtn');
+    b.innerHTML = isPaused ? '<i class="fas fa-play"></i> استئناف' : '<i class="fas fa-pause"></i> إيقاف';
+    if (!isPaused) showToast('i', 'استئناف', 'تم استئناف التحميل');
+    if (curDl) { updDlItem(curDl.id, downloads.find(d => d.id === curDl.id)?.progress || 0, isPaused ? 'paused' : 'downloading'); }
+}
+
+function cancelDown() {
+    clearInterval(dlInt);
+    document.getElementById('downProg').classList.remove('active');
+    if (curDl) {
+        const b = document.getElementById('btn-' + curDl.id);
+        if (b) { b.classList.remove('down'); b.innerHTML = '<i class="fas fa-download"></i> تحميل'; }
+        downloads = downloads.filter(d => d.id !== curDl.id);
+        saveDownloads();
+    }
+    curDl = null;
+    showToast('i', 'تم الإلغاء', 'تم إلغاء التحميل');
+}
+
+function compDl(id) {
+    const b = document.getElementById('btn-' + id);
+    if (b) { b.classList.remove('down'); b.classList.add('comp'); b.innerHTML = '<i class="fas fa-check"></i> تم'; }
+    setTimeout(() => {
+        document.getElementById('downProg').classList.remove('active');
+        if (b) { b.classList.remove('comp'); b.innerHTML = '<i class="fas fa-download"></i> تحميل'; }
+    }, 2000);
+    const d = downloads.find(x => x.id === id);
+    if (d) { d.progress = 100; d.status = 'completed'; saveDownloads(); }
+    const a = apps.find(x => x.id === id);
+    if (a) { a.downloads++; saveData(); updateStats(); }
+    showToast('s', 'تم بنجاح', 'تم تحميل ' + a.name);
+}
+
+function closeDown() { document.getElementById('downProg').classList.remove('active'); }
+
+function renderDownloads() {
+    const l = document.getElementById('downList');
+    if (downloads.length === 0) {
+        l.innerHTML = '<div class="empty-state"><i class="fas fa-download"></i><h3>لا توجد تنزيلات حالياً</h3><p>ابدأ بتحميل تطبيقاتك المفضلة</p></div>';
+        return;
+    }
+    const sorted = [...downloads].sort((a, b) => {
+        const order = { downloading: 0, paused: 1, completed: 2 };
+        return order[a.status] - order[b.status];
+    });
+    l.innerHTML = sorted.map(dl => {
+        const st = dl.status === 'completed' ? 'مكتمل' : dl.status === 'paused' ? 'متوقف' : 'جاري التحميل';
+        const sc = dl.status === 'completed' ? 'comp' : dl.status === 'paused' ? 'pause' : '';
+        return '<div class="down-item"><div class="down-icon">' + dl.icon + '</div><div class="down-info"><h4>' + dl.name + '</h4><p>' + fs(dl.size) + '</p></div><div class="down-bar"><div class="down-bar-bg"><div class="down-bar-fill" style="width:' + dl.progress + '%"></div></div><div class="down-status ' + sc + '">' + st + ' - ' + Math.floor(dl.progress) + '%</div></div><div class="down-actions">' + (dl.status === 'downloading' ? '<button onclick="pauseDlItem(' + dl.id + ')" title="إيقاف"><i class="fas fa-pause"></i></button>' : '') + (dl.status === 'paused' ? '<button onclick="resDlItem(' + dl.id + ')" title="استئناف"><i class="fas fa-play"></i></button>' : '') + '<button onclick="remDl(' + dl.id + ')" style="color:var(--danger)" title="حذف"><i class="fas fa-trash"></i></button></div></div>';
+    }).join('');
+}
+
+function pauseDlItem(id) {
+    const d = downloads.find(x => x.id === id);
+    if (d) { d.status = 'paused'; saveDownloads(); renderDownloads(); }
+}
+
+function resDlItem(id) {
+    const d = downloads.find(x => x.id === id);
+    if (d) { d.status = 'downloading'; saveDownloads(); renderDownloads(); if (!dlInt) startDl(id); }
+}
+
+function remDl(id) {
+    downloads = downloads.filter(d => d.id !== id);
+    saveDownloads();
+    renderDownloads();
+    showToast('s', 'تم الحذف', 'تم حذف التنزيل');
+}
+
+function clearComp() {
+    const b = downloads.length;
+    downloads = downloads.filter(d => d.status !== 'completed');
+    saveDownloads();
+    renderDownloads();
+    const removed = b - downloads.length;
+    showToast('i', 'تم المسح', 'تم مسح ' + removed + ' تنزيل مكتمل');
+}
+
+function clearAllDowns() {
+    if (!confirm('هل أنت متأكد من مسح جميع التنزيلات؟')) return;
+    downloads = [];
+    saveDownloads();
+    renderDownloads();
+    showToast('s', 'تم المسح', 'تم مسح جميع التنزيلات');
+}
+
+// ===== ADMIN =====
+function renderAdmin() {
+    const tb = document.getElementById('adminBody');
+    const search = document.getElementById('adminSearch')?.value || '';
+    let filtered = apps;
+    if (search) {
+        filtered = apps.filter(a => a.name.toLowerCase().includes(search.toLowerCase()) || a.desc.toLowerCase().includes(search.toLowerCase()));
+    }
+    tb.innerHTML = filtered.map(a => '<tr><td><div class="app-row"><div class="app-sm">' + a.icon + '</div><div><h4>' + a.name + '</h4><p>' + a.desc.substring(0, 30) + '...</p></div></div></td><td><span class="tag">' + pn(a.platform) + '</span></td><td>' + cn(a.category) + '</td><td>' + fs(a.size) + '</td><td><span style="color:var(--gold)"><i class="fas fa-star"></i> ' + a.rating + '</span></td><td>' + a.downloads.toLocaleString() + '</td><td><button class="btn-i btn-ed" onclick="editApp(' + a.id + ')" title="تعديل"><i class="fas fa-edit"></i></button><button class="btn-i btn-del" onclick="delApp(' + a.id + ')" title="حذف"><i class="fas fa-trash"></i></button></td></tr>').join('');
+    document.getElementById('adApps').textContent = apps.length.toLocaleString();
+    document.getElementById('adDown').textContent = apps.reduce((a, b) => a + b.downloads, 0).toLocaleString();
+    document.getElementById('adUsers').textContent = users.length.toLocaleString();
+}
+
+function searchAdmin(q) { renderAdmin(); }
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'إضافة تطبيق جديد';
+    document.getElementById('appForm').reset();
+    document.getElementById('editAppId').value = '';
+    document.getElementById('appModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function editApp(id) {
+    const a = apps.find(x => x.id === id);
+    if (!a) return;
+    document.getElementById('modalTitle').textContent = 'تعديل التطبيق';
+    document.getElementById('editAppId').value = a.id;
+    document.getElementById('appName').value = a.name;
+    document.getElementById('appPlatform').value = a.platform;
+    document.getElementById('appCategory').value = a.category;
+    document.getElementById('appDesc').value = a.desc;
+    document.getElementById('appSize').value = a.size;
+    document.getElementById('appRating').value = a.rating;
+    document.getElementById('appUrl').value = a.url || '';
+    document.getElementById('appBadge').value = a.badge || '';
+    document.getElementById('appModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function saveApp(e) {
+    e.preventDefault();
+    const id = document.getElementById('editAppId').value;
+    const ad = {
+        name: document.getElementById('appName').value.trim(),
+        platform: document.getElementById('appPlatform').value,
+        category: document.getElementById('appCategory').value,
+        desc: document.getElementById('appDesc').value.trim(),
+        size: parseInt(document.getElementById('appSize').value),
+        rating: parseFloat(document.getElementById('appRating').value),
+        url: document.getElementById('appUrl').value.trim(),
+        badge: document.getElementById('appBadge').value,
+        icon: gi(document.getElementById('appCategory').value),
+        downloads: 0,
+        createdAt: new Date().toISOString().split('T')[0]
+    };
+    if (id) {
+        const i = apps.findIndex(x => x.id == id);
+        if (i !== -1) {
+            ad.id = parseInt(id);
+            ad.downloads = apps[i].downloads;
+            ad.createdAt = apps[i].createdAt;
+            apps[i] = ad;
+            showToast('s', 'تم التحديث', 'تم تحديث التطبيق');
+        }
+    } else {
+        ad.id = Date.now();
+        apps.push(ad);
+        showToast('s', 'تم الإضافة', 'تم إضافة التطبيق');
+    }
+    saveData();
+    renderAdmin();
+    renderApps();
+    updateStats();
+    closeModal();
+}
+
+function delApp(id) {
+    if (!confirm('هل أنت متأكد من الحذف؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+    apps = apps.filter(a => a.id !== id);
+    saveData();
+    renderAdmin();
+    renderApps();
+    updateStats();
+    showToast('s', 'تم الحذف', 'تم حذف التطبيق');
+}
+
+function gi(c) {
+    const i = { apps: '📱', games: '🎮', tools: '🛠️', media: '🎬' };
+    return i[c] || '📦';
+}
+
+function closeModal() {
+    document.getElementById('appModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// ===== UTILITIES =====
+function pn(p) {
+    const n = { android: 'Android', ios: 'iOS', pc: 'PC', ps: 'PlayStation', xbox: 'Xbox' };
+    return n[p] || p;
+}
+
+function cn(c) {
+    const n = { apps: 'تطبيق', games: 'لعبة', tools: 'أداة', media: 'وسائط' };
+    return n[c] || c;
+}
+
+function fs(s) {
+    return s >= 1000 ? (s / 1000).toFixed(1) + ' GB' : s + ' MB';
+}
+
+function showToast(t, title, msg) {
+    const c = document.getElementById('toastContainer');
+    const x = document.createElement('div');
+    x.className = 'toast ' + t;
+    const i = { s: 'fa-check-circle', e: 'fa-times-circle', i: 'fa-info-circle', w: 'fa-exclamation-triangle' };
+    x.innerHTML = '<div class="toast-ic"><i class="fas ' + i[t] + '"></i></div><div class="toast-t"><h4>' + title + '</h4><p>' + msg + '</p></div>';
+    c.appendChild(x);
+    setTimeout(() => x.classList.add('show'), 10);
+    setTimeout(() => { x.classList.remove('show'); setTimeout(() => x.remove(), 400); }, 4000);
+}
+</script>
+</body>
+</html>
